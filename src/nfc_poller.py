@@ -3,9 +3,9 @@ import sys
 lib_path = os.path.abspath('../lib')
 sys.path.append(lib_path)
 
-from pyPN532.i2c import *
-from pyPN532.frame import *
-from pyPN532.constants import *
+from py532lib.i2c import *
+from py532lib.frame import *
+from py532lib.constants import *
 
 import hashlib
 
@@ -13,8 +13,8 @@ import hashlib
 class nfc_poller:
 
     def __init__(self):
-        self._address = 0x24
-        self._pn532 = Pn532_i2c(0x24, 1)
+        self._address = RPI_DEFAULT_I2C_NEW
+        self._pn532 = Pn532_i2c()
         self._pn532.SAMconfigure()
 
     def create_json_response(self, reader_id, card_uid, status):
