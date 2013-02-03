@@ -52,7 +52,7 @@ class Pn532_i2c:
             self.logger.setLevel("DEBUG")
 
         self.address = address
-        self.i2c_channel = i2c_channel
+        self.i2c_channel = 0
         self.PN532 = I2CMaster(self.i2c_channel)
 
     def send_command_check_ack(self, frame):
