@@ -2,8 +2,19 @@ import subprocess
 import json
 import requests
 import time
+import ConfigParser
+
+# Load configs
+config = ConfigParser.ConfigParser()
+config.read("gatekeeper.cfg")
+
+host = config.get('Server', 'host')
+port = config.get('Server', 'port')
+
+hikaruspace_address = 'http://' + host + ':' + port
 
 print "Gatekeeper, ENGAGED!"
+print "===================="
 
 # Scan forever and ever and ever and ever
 while True:
@@ -18,13 +29,22 @@ while True:
 
     # Convert the JSON into a list, then send it to Hikaruspace
     scan_results = json.loads(results)
-    r = requests.get('http://moncton.zombievolk.com:9999/update_clients',
-            params={'reader_id':scan_results['reader_id'], 
-                    'card_uid':scan_results['card_uid'],
-                    'status':scan_results['status'],
-                    'timestamp':timestamp})
+    try:
+        r = requests.get(hikaruspace_address + '/update_clients',
+        params={'reader_id':scan_results['reader_id'], 
+                'card_uid':scan_results['card_uid'],
+                'status':scan_results['status'],
+                'timestamp':timestamp})
+        card_uid = scan_results['card_uid']
 
-    card_uid = scan_results['card_uid']
+        print "Triggering " + r.url
+        print "Response: " + r.text
+    except:
+        print "Could not reach " + hikaruspace_address
+        print "CONNECTION ERROR: Either Hikaruspace is down, your connection is down, or the configs are off."
 
-    print "Triggering " + r.url
-    print "Response: " + r.text
+    # Cleanup for next scan, just in case there could be residual something
+    timestamp = 0
+    card_uid = 0
+
+    
