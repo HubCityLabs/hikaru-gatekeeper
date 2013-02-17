@@ -47,9 +47,6 @@ while True:
         hashed_time = hashlib.sha224()
         hashed_time.update(secret_key + str(timestamp))
         print "Hashed time: " + hashed_time.hexdigest()
-        
-        
-
 
     except requests.ConnectionError:
         print "Could not reach " + hikaruspace_address
