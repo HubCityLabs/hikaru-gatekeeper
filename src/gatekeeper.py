@@ -4,6 +4,7 @@ import requests
 import time
 import ConfigParser
 import hashlib
+import RPi.GPIO as GPIO
 
 # Load configs
 config = ConfigParser.ConfigParser()
@@ -47,6 +48,20 @@ while True:
         hashed_time = hashlib.sha224()
         hashed_time.update(secret_key + str(timestamp))
         print "Hashed time: " + hashed_time.hexdigest()
+
+        # Is it valid?
+        response = json.loads(r.text)
+        if response['access'] == 'granted':
+            print "Access granted!"
+            button_pin = 23 # Set to whatever your pin is
+            GPIO.setwarnings(False)
+            GPIO.setmode(GPIO.BCM)
+            GPIO.setup(button_pin, GPIO.OUT)
+            GPIO.output(button_pin, GPIO.HIGH)
+            time.sleep(3)
+            GPIO.output(button_pin, GPIO.LOW)
+        else:
+            print "Access denied!"
 
     except requests.ConnectionError:
         print "Could not reach " + hikaruspace_address
